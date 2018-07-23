@@ -8,9 +8,10 @@ var markers = [];
  */
 document.addEventListener('DOMContentLoaded', (event) => {
   registerSw();
-  initMap(); // added 
+  initMap(); // added
   fetchNeighborhoods();
   fetchCuisines();
+  DBHelper.fetchRestaurantById(3, console.log)
 });
 /**
  * Register Service Worker
@@ -209,7 +210,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 
-} 
+}
 /* addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
