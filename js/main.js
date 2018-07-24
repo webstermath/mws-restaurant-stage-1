@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
   initMap(); // added
   fetchNeighborhoods();
   fetchCuisines();
-  DBHelper.fetchRestaurantById(3, console.log)
+  
+  
 });
 /**
  * Register Service Worker

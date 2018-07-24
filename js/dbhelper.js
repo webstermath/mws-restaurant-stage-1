@@ -1,13 +1,21 @@
  /**
  * Common database helper functions.
  */
+ const localDb=idb.open('restaurants',1,function(upgradeDb){
+    const allStore=upgradeDb.createObjectStore('all');
+    const individualStore=upgradeDb.createObjectStore('individual',{
+      keyPath: 'id'
+    });
+  })
 
 class DBHelper {
-
+  
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
+ 
+   
   static get DATABASE_URL() {
     //const baseUrl=/^.*\:\d+/.exec(window.location.href)[0];
     //return `${baseUrl}/data/restaurants.json`;
@@ -24,26 +32,36 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback,id) {
-    let url=DBHelper.DATABASE_URL
-    if(id) url+='?id='+id;
-    //if(id) url+='/'+id;
-    fetch(url)
-    .then(response => response.json())
+    localDb.then( db => {
+    const storeName = (typeof id!='undefined') ? 'individual'  : 'all';
+    const tx =db.transaction(storeName,'readwrite');
+    const store = tx.objectStore(storeName);
+    const storeResponse= (typeof id!='undefined') ? store.get(id) : store.get('restaurants');
+    storeResponse.then(response =>{
+     if(response) return callback(null,response);
+     let url=DBHelper.DATABASE_URL
+     if(typeof id!='undefined') url+='?id='+id;
+     //if(id) url+='/'+id;
+     fetch(url)
+     .then(response => response.json())
+     .then(response => {
+      if(typeof id!='undefined'){
+        db.transaction(storeName,'readwrite')
+        .objectStore(storeName)
+        .put(response)
+      }else{
+        db.transaction(storeName,'readwrite')
+        .objectStore(storeName)
+        .put(response,'restaurants')
+      }
+      return response;
+    })
     .then(response => callback(null,response))
     .catch(callback)
-    // let xhr = new XMLHttpRequest();
-    // xhr.open('GET', DBHelper.DATABASE_URL);
-    // xhr.onload = () => {
-    //   if (xhr.status === 200) { // Got a success response from server!
-    //     const json = JSON.parse(xhr.responseText);
-    //     const restaurants = json;
-    //     callback(null, restaurants);
-    //   } else { // Oops!. Got an error from server.
-    //     const error = (`Request failed. Returned status of ${xhr.status}`);
-    //     callback(error, null);
-    //   }
-    // };
-    // xhr.send();
+      
+    })
+
+    })
   }
 
   /**
