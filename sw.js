@@ -16,10 +16,13 @@ self.addEventListener('install',function(event){
 });
 
 self.addEventListener('fetch',function(event){
+  let url=null
+  if(event.request.url.includes('restaurant.html?id')) url=event.request.url.replace(/\?id.*/,'')
+  console.log(url)
   event.respondWith(
-    caches.match(event.request).then(response => {
+    caches.match(url || event.request).then(response => {
       if(response) return response;
-      if(event.request.url.includes('.jpg')){
+      if(event.request.url.includes('.jpg') || event.request.url.includes('.ico')){
         fetch(event.request).then(response => {
           caches.open('restaurant-v1')
           .then(cache => {

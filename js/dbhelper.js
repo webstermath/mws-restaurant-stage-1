@@ -36,7 +36,7 @@ class DBHelper {
     const storeName = (typeof id!='undefined') ? 'individual'  : 'all';
     const tx =db.transaction(storeName,'readwrite');
     const store = tx.objectStore(storeName);
-    const storeResponse= (typeof id!='undefined') ? store.get(id) : store.get('restaurants');
+    const storeResponse= (typeof id!='undefined') ? store.get(Number(id)) : store.get('restaurants');
     storeResponse.then(response =>{
      if(response) return callback(null,response);
      let url=DBHelper.DATABASE_URL
@@ -198,16 +198,6 @@ class DBHelper {
       marker.addTo(newMap);
     return marker;
   }
-  /* static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP}
-    );
-    return marker;
-  } */
 
 }
 
