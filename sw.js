@@ -3,6 +3,7 @@ self.addEventListener('install',function(event){
     caches.open('restaurant-v1').then(cache => {
       return cache.addAll([
         '/',
+        '/manifest.json',
         '/sw.js',
         'js/idb.js',
         '/restaurant.html',
@@ -18,7 +19,6 @@ self.addEventListener('install',function(event){
 self.addEventListener('fetch',function(event){
   let url=null
   if(event.request.url.includes('restaurant.html?id')) url=event.request.url.replace(/\?id.*/,'')
-  console.log(url)
   event.respondWith(
     caches.match(url || event.request).then(response => {
       if(response) return response;
